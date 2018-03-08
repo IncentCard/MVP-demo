@@ -10,7 +10,9 @@ var cardProduct;
 var fundingSource;
 var user;
 var card;
+var cardType;
 var velocity;
+var rewardPoints = 0;
 
 // The random number is so I can see if the page refreshes correctly or not
 console.log('Starting! ' + Math.random());
@@ -53,9 +55,10 @@ interface velocityTemplate {
     currency_code?: string;
 }
 
+//The spending controls on the entry level "Piggy Saver" card
 var piggyTempate: velocityTemplate = {
-    "usage_limit": 10,
-    "amount_limit": 100,
+    "usage_limit": 100,
+    "amount_limit": 500,
     "velocity_window": "DAY",
     "association": {
         "card_product_token": "REPLACE"
@@ -63,6 +66,7 @@ var piggyTempate: velocityTemplate = {
     "currency_code": "USD",
 }
 
+//The spending controls on the high end "Fat Cat Spender" card
 var fatcatTempate: velocityTemplate = {
     "usage_limit": 100,
     "amount_limit": 1000,
@@ -88,11 +92,12 @@ function updateBalance() {
             $('#balance').text("The user's balance is: " + gpa.ledger_balance + ' and available balance is: ' + gpa.available_balance);
         }
     });
+    $('#piggy-points').text(rewardPoints);
 }
 
 function buildCard(type: CardTypes) {
     let product = new CardProductTemplate('Demo ' + type + ' card product');
-
+    cardType = type;
     $.ajax({
         url: 'https://shared-sandbox-api.marqeta.com/v3/cardproducts',
         type: 'post',
@@ -142,7 +147,6 @@ function buildCard(type: CardTypes) {
                         velocity = data;
                     }
                 }),
-
                 $.ajax({
                     url: 'https://shared-sandbox-api.marqeta.com/v3/cards',
                     type: 'post',
@@ -164,9 +168,64 @@ function buildCard(type: CardTypes) {
                 $('#spend-div').css('visibility', 'visible');
                 $('#card-div').hide();
             })
-
-   
+        }
+    });
 }
+
+function transact(amount: number) {
+    let template = {
+        card_token: card.token,
+        amount: amount,
+        mid: '24601'
+    };
+    $.ajax({
+        url: 'https://shared-sandbox-api.marqeta.com/v3/simulate/authorization',
+        type: 'post',
+        data: JSON.stringify(template),
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': authHeader
+        },
+        dataType: 'json',
+        success: function (data) {
+            console.log(data);
+            let transaction = data.transaction;
+            if (transaction.state == 'DECLINED') {
+                alert(transaction.response.memo);
+            } else {
+                if (cardType == CardTypes.piggy) {
+                    rewardPoints += (amount * .1);
+                }
+                updateBalance();
+            }
+        }
+    });
+}
+
+function fundUser(amount: number) {
+    let template = {
+        user_token: user.token,
+        amount: amount,
+        currency_code: 'USD',
+        funding_source_token: fundingSource.token
+    };
+    $.ajax({
+        url: 'https://shared-sandbox-api.marqeta.com/v3/gpaorders',
+        type: 'post',
+        data: JSON.stringify(template),
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': authHeader
+        },
+        dataType: 'json',
+        success: function (data) {
+            console.log(data);
+            updateBalance();
+            $('#balances-button').css('visibility', 'visible');
+            $('#card-div').css('visibility', 'visible');
+        }
     });
 }
 
@@ -222,64 +281,37 @@ $(document).ready(function () {
         });
     });
 
-    //TODO: update the user's account, funding, transactions, and Canadian dollars to get around sandbox issues
     $('#fund-button').click(function () {
         console.log('button clicked!');
-        let template = {
-            user_token: user.token,
-            amount: 100,
-            currency_code: 'USD',
-            funding_source_token: fundingSource.token
-        };
-        $.ajax({
-            url: 'https://shared-sandbox-api.marqeta.com/v3/gpaorders',
-            type: 'post',
-            data: JSON.stringify(template),
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': authHeader
-            },
-            dataType: 'json',
-            success: function (data) {
-                console.log(data);
-                updateBalance();
-                $('#balances-button').css('visibility', 'visible');
-                $('#card-div').css('visibility', 'visible');
-            }
-        });
+        fundUser(100);
     });
 
-    $('#transact-button').click(function () {
-        console.log('button clicked!');
-        let template = {
-            card_token: card.token,
-            amount: 10,
-            mid: '123456890'
-        };
-        $.ajax({
-            url: 'https://shared-sandbox-api.marqeta.com/v3/simulate/authorization',
-            type: 'post',
-            data: JSON.stringify(template),
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': authHeader
-            },
-            dataType: 'json',
-            success: function (data) {
-                console.log(data);
-                updateBalance();
-                let transaction = data.transaction;
-                if (transaction.state == 'DECLINED') {
-                    alert(transaction.response.memo);
-                }
-            }
-        });
+    $('#transact-10').click(function () {
+        console.log('transact $10 button clicked!');
+        transact(10);
+    });
+
+    $('#transact-50').click(function () {
+        console.log('transact $50 button clicked!');
+        transact(50);
+    });
+
+    $('#transact-100').click(function () {
+        console.log('transact $100 button clicked!');
+        transact(100);
+    });
+
+    $('.transact-button').click(function () {
+        $('#rewards-div').css('visibility', 'visible');
     });
 
     $('#balances-button').click(function () {
-        console.log('button clicked!');
+        console.log('update balance button clicked!');
         updateBalance();
+    });
+
+    $('#rewards-button').click(function () {
+        console.log('rewards button clicked!');
+        fundUser(rewardPoints);
     });
 })

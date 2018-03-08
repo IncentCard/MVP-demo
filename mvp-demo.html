@@ -11,6 +11,7 @@
     #card-div {visibility: hidden;}
     #spend-div {visibility: hidden;}
     #balances-button {visibility: hidden;}
+    #rewards-div {visibility: hidden;}
 </style>
 </head>
 <body>
@@ -24,14 +25,25 @@
         </div>
     </div>
     <div id="card-div">
+        <p>There are currently two card types to choose from!
+            The PiggySaver&trade; card has a spending limit of $500 and grants an industry leading 10% cash back!!!
+            The FatCat&trade; card has an incredible spending limit of $1000 at the cost of earning 100% less cash back!!!!!
+        </p>
         <p id="product-token">Choose a Card Product to Create</p>
-        <button id="piggy-button">Create PiggyCard</button>
-        <button id="fatcat-button">Create FatCatCard</button>
+        <button id="piggy-button">Create PiggySaver Card</button>
+        <button id="fatcat-button">Create Fat Cat Spender Card</button>
     </div>
     <div id="spend-div">
         <h1>Time to spend money!!!</h1>
         <p id="card-token">Card token: BLANK</p>
-        <button id="transact-button">Transact $10</button>
+        <button id="transact-10" class="transact-button">Transact $10</button>
+        <button id="transact-50" class="transact-button">Transact $50</button>
+        <button id="transact-100" class="transact-button">Transact $100</button>
+    </div>
+    <div id="rewards-div">
+        <h2>Rewards Center</h2>
+        <p>Piggy points earned: <span id="piggy-points">0</span></p>
+        <button id="rewards-button">Claim Rewards</button>
     </div>
 </body>
 </html>
