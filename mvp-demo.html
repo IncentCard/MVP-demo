@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MVP Feature Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+<script src="mvp-demo.js"></script>
+<style>
+    #balance-div {visibility: hidden;}
+    #card-div {visibility: hidden;}
+    #spend-div {visibility: hidden;}
+    #balances-button {visibility: hidden;}
+</style>
+</head>
+<body>
+    <div>
+        <p id="user-token">Please click the button below to create a user</p>
+        <button id="user-button">Create a User</button>
+        <div id="balance-div">
+            <p id="balance">Add some money to the user's account!</p>
+            <button id="fund-button">Add $100</button>
+            <button id="balances-button">Update balance</button>
+        </div>
+    </div>
+    <div id="card-div">
+        <p id="product-token">Choose a Card Product to Create</p>
+        <button id="piggy-button">Create PiggyCard</button>
+        <button id="fatcat-button">Create FatCatCard</button>
+    </div>
+    <div id="spend-div">
+        <h1>Time to spend money!!!</h1>
+        <p id="card-token">Card token: BLANK</p>
+        <button id="transact-button">Transact $10</button>
+    </div>
+</body>
+</html>
