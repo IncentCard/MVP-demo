@@ -13,6 +13,7 @@ var card: any;
 var cardType: any;
 var velocity: any;
 var rewardPoints: number = 0;
+const baseUrl: string = "https://shared-sandbox-api.marqeta.com/v3/";
 
 // the random number is so I can see if the page refreshes correctly or not
 console.log("Starting! " + Math.random());
@@ -62,7 +63,7 @@ interface VelocityTemplate {
 }
 
 // the spending controls on the entry level "Piggy Saver" card
-var piggyTempate: VelocityTemplate = {
+var piggyTemplate: VelocityTemplate = {
     "usage_limit": 100,
     "amount_limit": 500,
     "velocity_window": "DAY",
@@ -73,7 +74,7 @@ var piggyTempate: VelocityTemplate = {
 };
 
 // the spending controls on the high end "Fat Cat Spender" card
-var fatcatTempate: VelocityTemplate = {
+var fatCatTemplate: VelocityTemplate = {
     "usage_limit": 100,
     "amount_limit": 1000,
     "velocity_window": "DAY",
@@ -83,9 +84,12 @@ var fatcatTempate: VelocityTemplate = {
     "currency_code": "USD",
 };
 
+/**
+ * Fetches the user balance and updates the #balance tag in the document with the user's total balance and available balance
+ */
 function updateBalance(): void {
     $.ajax({
-        url: "https://shared-sandbox-api.marqeta.com/v3/balances/" + user.token,
+        url: baseUrl + "balances" + "/" + user.token,
         type: "get",
         headers: {
             "Accept": "application/json",
@@ -100,10 +104,14 @@ function updateBalance(): void {
     });
     $("#piggy-points").text(rewardPoints);
 }
-
+/**
+ * Goes through the two step process to create a pin on the card.
+ *
+ * @param  {number} pin The PIN required to make transactions on the card.
+ */
 function createPin(pin: number): void {
     $.ajax({
-        url: "https://shared-sandbox-api.marqeta.com/v3/pins/controltoken",
+        url: baseUrl + "pins/controltoken",
         type: "post",
         data: JSON.stringify({
             "card_token": card.token
@@ -117,7 +125,7 @@ function createPin(pin: number): void {
         success: function (data: any): void {
             console.log(data);
             $.ajax({
-                url: "https://shared-sandbox-api.marqeta.com/v3/pins",
+                url: baseUrl + "pins",
                 type: "put",
                 data: JSON.stringify({
                     "control_token": data.control_token,
@@ -137,11 +145,16 @@ function createPin(pin: number): void {
     });
 }
 
+/**
+ * Builds a CardProduct, Card, and velocity controls based on the enum type passed.
+ *
+ * @param  {CardTypes} type The type of card to create.
+ */
 function buildCard(type: CardTypes): void {
     let product: CardProductTemplate = new CardProductTemplate("Demo " + type + " card product");
     cardType = type;
     $.ajax({
-        url: "https://shared-sandbox-api.marqeta.com/v3/cardproducts",
+        url: baseUrl + "cardproducts",
         type: "post",
         data: JSON.stringify(product),
         headers: {
@@ -157,11 +170,11 @@ function buildCard(type: CardTypes): void {
             let vel: VelocityTemplate;
             switch (type) {
                 case CardTypes.piggy: {
-                    vel = piggyTempate;
+                    vel = piggyTemplate;
                     break;
                 }
                 case CardTypes.fatcat: {
-                    vel = fatcatTempate;
+                    vel = fatCatTemplate;
                     break;
                 }
                 default: {
@@ -175,7 +188,7 @@ function buildCard(type: CardTypes): void {
             };
             $.when(
                 $.ajax({
-                    url: "https://shared-sandbox-api.marqeta.com/v3/velocitycontrols",
+                    url: baseUrl + "velocitycontrols",
                     type: "post",
                     data: JSON.stringify(vel),
                     headers: {
@@ -190,7 +203,7 @@ function buildCard(type: CardTypes): void {
                     }
                 }),
                 $.ajax({
-                    url: "https://shared-sandbox-api.marqeta.com/v3/cards",
+                    url: baseUrl + "cards",
                     type: "post",
                     data: JSON.stringify(cardTemplate),
                     headers: {
@@ -213,6 +226,12 @@ function buildCard(type: CardTypes): void {
     });
 }
 
+/**
+ * Performs a simulated transaction for the amount provided.
+ *
+ * @param  {number} amount The USD amount to transact.
+ * @param  {string} pin The PIN to send along with the request.
+ */
 function transact(amount: number, pin: string): void {
     let template: object = {
         card_token: card.token,
@@ -221,7 +240,7 @@ function transact(amount: number, pin: string): void {
         pin: pin
     };
     $.ajax({
-        url: "https://shared-sandbox-api.marqeta.com/v3/simulate/authorization",
+        url: baseUrl + "simulate/authorization",
         type: "post",
         data: JSON.stringify(template),
         headers: {
@@ -244,8 +263,12 @@ function transact(amount: number, pin: string): void {
         }
     });
 }
-
-function fundUser(amount: number): any {
+/**
+ * Adds funds to the user's GPA
+ *
+ * @param  {number} amount The amount in USD to add the the user's GPA
+ */
+function fundUser(amount: number): void {
     let template: object = {
         user_token: user.token,
         amount: amount,
@@ -253,7 +276,7 @@ function fundUser(amount: number): any {
         funding_source_token: fundingSource.token
     };
     $.ajax({
-        url: "https://shared-sandbox-api.marqeta.com/v3/gpaorders",
+        url: baseUrl + "gpaorders",
         type: "post",
         data: JSON.stringify(template),
         headers: {
@@ -271,6 +294,60 @@ function fundUser(amount: number): any {
     });
 }
 
+function createUser(): void {
+    $.when(
+        $.ajax({
+            url: baseUrl + "users",
+            type: "post",
+            data: "{}",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": authHeader
+            },
+            dataType: "json",
+            success: function (data: any): void {
+                console.log(data);
+                user = data;
+                $("#user-token").text("User token: " + user.token);
+            }
+        }),
+        $.ajax({
+            url: baseUrl + "fundingsources/program",
+            type: "post",
+            data: JSON.stringify(fundingSourceTemplate),
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": authHeader
+            },
+            dataType: "json",
+            success: function (data: any): void {
+                console.log(data);
+                fundingSource = data;
+            }
+        })
+    ).done((a1, a2) => {
+        $("#balance-div").css("visibility", "visible");
+    });
+}
+/**
+ * Extracts the values from the transaction field when the submit button is pressed. 
+ * Then calls transact() with the extracted values.
+ * @returns boolean Always returns false to keep the page from refreshing.
+ */
+function transactFormSubmit(): boolean {
+    var values: any = {};
+    $.each($(this).serializeArray(), function (i: number, field: any): void {
+        values[field.name] = field.value;
+    });
+    let amount: number = Number(values.amount);
+    let pin: string = values.pin;
+    transact(amount, pin);
+    $("#rewards-div").css("visibility", "visible");
+    return false;
+}
+
 $(document).ready(() => {
     console.log("Document ready");
 
@@ -286,67 +363,23 @@ $(document).ready(() => {
 
     $("#user-button").click(() => {
         console.log("#user-button clicked!");
-        $.when(
-            $.ajax({
-                url: "https://shared-sandbox-api.marqeta.com/v3/users",
-                type: "post",
-                data: "{}",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                    "Authorization": authHeader
-                },
-                dataType: "json",
-                success: function (data: any): void {
-                    console.log(data);
-                    user = data;
-                    $("#user-token").text("User token: " + user.token);
-                }
-            }),
-            $.ajax({
-                url: "https://shared-sandbox-api.marqeta.com/v3/fundingsources/program",
-                type: "post",
-                data: JSON.stringify(fundingSourceTemplate),
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                    "Authorization": authHeader
-                },
-                dataType: "json",
-                success: function (data: any): void {
-                    console.log(data);
-                    fundingSource = data;
-                }
-            })
-        ).done((a1, a2) => {
-            $("#balance-div").css("visibility", "visible");
-        });
+        createUser();
     });
 
     $("#fund-button").click(() => {
-        console.log("button clicked!");
+        console.log("#fund-button clicked!");
         fundUser(100);
     });
 
     $("#balances-button").click(() => {
-        console.log("update balance button clicked!");
+        console.log("#balances-button clicked!");
         updateBalance();
     });
 
     $("#rewards-button").click(() => {
-        console.log("rewards button clicked!");
+        console.log("#rewards-button clicked!");
         fundUser(rewardPoints);
     });
 
-    $("#transaction-form").submit(function (): boolean {
-        var values: any = {};
-        $.each($(this).serializeArray(), function (i: number, field: any): void {
-            values[field.name] = field.value;
-        });
-        let amount: number = Number(values.amount);
-        let pin: string = values.pin;
-        transact(amount, pin);
-        $("#rewards-div").css("visibility", "visible");
-        return false;
-    });
+    $("#transaction-form").submit(transactFormSubmit);
 });
