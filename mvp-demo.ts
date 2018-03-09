@@ -32,6 +32,11 @@ class CardProductTemplate {
             'card_life_cycle': {
                 'activate_upon_issue': true
             }
+            //TODO: figure out why this won't work with the simulation
+            // ,
+            // 'transaction_controls': {
+            //     'always_require_pin': true
+            // }
         }
     }
 }
@@ -41,8 +46,8 @@ const fundingSourceTemplate = {
 }
 
 enum CardTypes {
-    piggy = 'Piggy',
-    fatcat = 'Fat Cat'
+    piggy = 'PiggySaver',
+    fatcat = 'FatCat'
 }
 
 interface velocityTemplate {
@@ -93,6 +98,42 @@ function updateBalance() {
         }
     });
     $('#piggy-points').text(rewardPoints);
+}
+
+function createPin(pin: number) {
+    $.ajax({
+        url: 'https://shared-sandbox-api.marqeta.com/v3/pins/controltoken',
+        type: 'post',
+        data: JSON.stringify({
+            "card_token": card.token
+        }),
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': authHeader
+        },
+        dataType: 'json',
+        success: function (data) {
+            console.log(data);
+            $.ajax({
+                url: 'https://shared-sandbox-api.marqeta.com/v3/pins',
+                type: 'put',
+                data: JSON.stringify({
+                    "control_token": data.control_token,
+                    "pin": pin
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': authHeader
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                }
+            })
+        }
+    })
 }
 
 function buildCard(type: CardTypes) {
@@ -161,22 +202,22 @@ function buildCard(type: CardTypes) {
                         console.log(data);
                         card = data;
                         $('#card-token').text('Card token: ' + card.token);
-
+                        createPin(2460);
                     }
                 })
             ).done((a1, a2) => {
                 $('#spend-div').css('visibility', 'visible');
-                $('#card-div').hide();
             })
         }
     });
 }
 
-function transact(amount: number) {
+function transact(amount: number, pin: string) {
     let template = {
         card_token: card.token,
         amount: amount,
-        mid: '24601'
+        mid: '24601',
+        pin: pin
     };
     $.ajax({
         url: 'https://shared-sandbox-api.marqeta.com/v3/simulate/authorization',
@@ -286,25 +327,6 @@ $(document).ready(function () {
         fundUser(100);
     });
 
-    $('#transact-10').click(function () {
-        console.log('transact $10 button clicked!');
-        transact(10);
-    });
-
-    $('#transact-50').click(function () {
-        console.log('transact $50 button clicked!');
-        transact(50);
-    });
-
-    $('#transact-100').click(function () {
-        console.log('transact $100 button clicked!');
-        transact(100);
-    });
-
-    $('.transact-button').click(function () {
-        $('#rewards-div').css('visibility', 'visible');
-    });
-
     $('#balances-button').click(function () {
         console.log('update balance button clicked!');
         updateBalance();
@@ -314,4 +336,16 @@ $(document).ready(function () {
         console.log('rewards button clicked!');
         fundUser(rewardPoints);
     });
+
+    $('#transaction-form').submit(function() {
+        var values = {};
+        $.each($('#transaction-form').serializeArray(), function (i, field) {
+            values[field.name] = field.value;
+        });
+        let amount: number = Number(values['amount']);
+        let pin: string = values['pin']
+        transact(amount, pin)
+        $('#rewards-div').css('visibility', 'visible');
+        return false;
+    })
 })

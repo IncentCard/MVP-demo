@@ -1,19 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>MVP Feature Demo</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
-<script src="mvp-demo.js"></script>
-<style>
-    #balance-div {visibility: hidden;}
-    #card-div {visibility: hidden;}
-    #spend-div {visibility: hidden;}
-    #balances-button {visibility: hidden;}
-    #rewards-div {visibility: hidden;}
-</style>
+    <meta charset="UTF-8">
+    <title>MVP Feature Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+    <script src="mvp-demo.js"></script>
+    <style>
+        #balance-div {
+            visibility: hidden;
+        }
+
+        #card-div {
+            visibility: hidden;
+        }
+
+        #spend-div {
+            visibility: hidden;
+        }
+
+        #balances-button {
+            visibility: hidden;
+        }
+
+        #rewards-div {
+            visibility: hidden;
+        }
+    </style>
 </head>
+
 <body>
     <div>
         <p id="user-token">Please click the button below to create a user</p>
@@ -21,29 +37,40 @@
         <div id="balance-div">
             <p id="balance">Add some money to the user's account!</p>
             <button id="fund-button">Add $100</button>
-            <button id="balances-button">Update balance</button>
+            <button id="balances-button">Update Balance</button>
         </div>
     </div>
     <div id="card-div">
-        <p>There are currently two card types to choose from!
-            The PiggySaver&trade; card has a spending limit of $500 and grants an industry leading 10% cash back!!!
-            The FatCat&trade; card has an incredible spending limit of $1000 at the cost of earning 100% less cash back!!!!!
+        <p>There are currently two card types to choose from! The PiggySaver&trade; card has a spending limit of $500 and grants
+            an industry leading 10% of your purchase value as PiggyBank Points&reg;!!! The FatCat&trade; card has an incredible
+            spending limit of $1000 at the cost of earning 100% less PiggyBank Points&reg;!!!!!
         </p>
-        <p id="product-token">Choose a Card Product to Create</p>
-        <button id="piggy-button">Create PiggySaver Card</button>
-        <button id="fatcat-button">Create Fat Cat Spender Card</button>
+        <button id="piggy-button">Create PiggySaver&trade; Card</button>
+        <button id="fatcat-button">Create FatCat&trade; Card</button>
     </div>
     <div id="spend-div">
         <h1>Time to spend money!!!</h1>
-        <p id="card-token">Card token: BLANK</p>
-        <button id="transact-10" class="transact-button">Transact $10</button>
-        <button id="transact-50" class="transact-button">Transact $50</button>
-        <button id="transact-100" class="transact-button">Transact $100</button>
+        <p id="product-token"></p>
+        <p id="card-token"></p>
+        <form id="transaction-form">
+            Amount:
+            <br>
+            <input type="text" name="amount" value="10">
+            <br> PIN:
+            <br>
+            <input type="text" name="pin" value="2460">
+            <br>
+            <br>
+            <input type="submit" value="Spend!">
+        </form>
     </div>
     <div id="rewards-div">
         <h2>Rewards Center</h2>
-        <p>Piggy points earned: <span id="piggy-points">0</span></p>
+        <p>PiggyBank Points&reg; earned:
+            <span id="piggy-points">0</span>
+        </p>
         <button id="rewards-button">Claim Rewards</button>
     </div>
 </body>
+
 </html>
