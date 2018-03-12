@@ -332,7 +332,7 @@ function createUser(): void {
     });
 }
 /**
- * Extracts the values from the transaction field when the submit button is pressed. 
+ * Extracts the values from the transaction field when the submit button is pressed.
  * Then calls transact() with the extracted values.
  * @returns boolean Always returns false to keep the page from refreshing.
  */
