@@ -9,18 +9,10 @@ const expect: Chai.ExpectStatic = chai.expect;
 
 describe("baseRoute", () => {
 
-  it("should be json", () => {
+  it("should be html", () => {
     return chai.request(app).get("/")
     .then(res => {
-      expect(res.type).to.eql("application/json");
+      expect(res.type).to.eql("text/html");
     });
   });
-
-  it("should have a message prop", () => {
-    return chai.request(app).get("/")
-    .then(res => {
-      expect(res.body.message).to.eql("Hello World!");
-    });
-  });
-
 });
