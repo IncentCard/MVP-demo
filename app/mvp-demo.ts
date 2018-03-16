@@ -19,8 +19,8 @@ const baseUrl: string = "https://shared-sandbox-api.marqeta.com/v3/";
 console.log("Starting! " + Math.random());
 
 class CardProductTemplate {
-    start_date;
-    config;
+    start_date: string;
+    config: object;
     constructor(public name: string) {
         this.start_date = "2017-01-01";
         this.config = {

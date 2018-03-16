@@ -32,7 +32,7 @@ class App {
     let router: express.Router = express.Router();
     // placeholder route handler
     router.get("/", (req, res, next) => {
-      res.sendFile(path.join(__dirname + "/mvp-demo.html"));
+      res.sendFile(path.join(__dirname + "/../index.html"));
     });
     this.express.use("/", router);
   }
