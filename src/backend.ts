@@ -1,5 +1,5 @@
-import { UserCreationState } from "./components/UserCreation";
-import { authHeader, baseUrl } from "./crutch";
+const authHeader: string = "Basic dXNlcjI3NTgxNTE5MzQ0MDU2Ojg4OTAxMTViLTdiOGUtNDRiOC05Mjc0LWI2ZjRlMGQzZmFlZA==";
+const baseUrl: string = "https://shared-sandbox-api.marqeta.com/v3/";
 
 const fundingSourceTemplate: object = {
     name: "Program Funding",
@@ -61,9 +61,9 @@ export async function updateBalance(userToken: string): Promise<string> {
 }
 
 // todo: make this take a variable amount
-export async function fundUser(userToken: string, fundingSourceToken: string): Promise<void> {
+export async function fundUser(amount: number, userToken: string, fundingSourceToken: string): Promise<void> {
     const template: object = {
-        amount: 100,
+        amount: amount,
         currency_code: "USD",
         funding_source_token: fundingSourceToken,
         user_token: userToken,

@@ -4,12 +4,11 @@ import { UserBalance } from "./UserBalance";
 
 export interface UserCreationState {
     userToken?: string;
-    user?: any;
-    fundingSource?: any;
 }
 
 export interface UserCreationProps {
     updateUserToken(token: string): void;
+    updateFundingSourceToken(token: string): void;
 }
 
 export class UserCreation extends React.Component<UserCreationProps, UserCreationState> {
@@ -25,20 +24,12 @@ export class UserCreation extends React.Component<UserCreationProps, UserCreatio
             this.setState((prevState, props) => {
                 props.updateUserToken(user.token);
                 return {
-                    fundingSource: prevState.fundingSource,
-                    user,
                     userToken: "User token: " + user.token,
                 };
             });
         });
         Backend.createFundingSource().then((fundingSource) => {
-            this.setState((prevState, props) => {
-                return {
-                    fundingSource,
-                    user: prevState.user,
-                    userToken: prevState.userToken,
-                };
-            });
+            this.props.updateFundingSourceToken(fundingSource.token);
         });
     }
 
@@ -47,7 +38,6 @@ export class UserCreation extends React.Component<UserCreationProps, UserCreatio
             <div>
                 <p>{this.state.userToken}</p>
                 <button onClick={this.createUser}>Create a User</button>
-                <UserBalance fundingSource={this.state.fundingSource} user={this.state.user} />
             </div>
         );
     }

@@ -16,7 +16,7 @@ export class Spend extends React.Component<SpendProps, {}> {
                 <div id="spend-div">
                     <h1>Time to spend money!!!</h1>
                     <p>Card token: {this.props.cardToken}</p>
-                    <SpendForm transact={this.props.transact} cardToken={this.props.cardToken} />
+                    <SpendForm transact={this.props.transact} />
                 </div>
             );
         }

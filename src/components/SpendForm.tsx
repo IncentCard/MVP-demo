@@ -2,7 +2,6 @@ import * as React from "react";
 import * as Backend from "../backend";
 
 export interface SpendFormProps {
-    cardToken: string;
     transact(amount: number);
 }
 
@@ -24,7 +23,6 @@ export class SpendForm extends React.Component<SpendFormProps, SpendFormState> {
         this.setState((prevState, props) => {
             return {
                 amount: event.target.value,
-                pin: prevState.pin,
             };
         });
     }
@@ -32,17 +30,14 @@ export class SpendForm extends React.Component<SpendFormProps, SpendFormState> {
     public handleChangePin(event) {
         this.setState((prevState, props) => {
             return {
-                amount: prevState.amount,
                 pin: event.target.value,
             };
         });
     }
 
-    // todo: make this refresh the user balance
     public handleSubmit(event) {
         event.preventDefault();
-        Backend.transact(this.state.amount, this.state.pin, this.props.cardToken)
-            .then(() => this.props.transact(this.state.amount));
+        this.props.transact(this.state.amount);
     }
 
     public render() {

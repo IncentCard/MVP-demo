@@ -2,44 +2,28 @@ import * as React from "react";
 import * as Backend from "../backend";
 
 export interface UserBalanceProps {
-    fundingSource: any;
-    user: any;
-}
-
-export interface UserBalanceState {
     balance: string;
+    updateBalance(): void;
+    fundUser(amount: number): void;
 }
 
-export class UserBalance extends React.Component<UserBalanceProps, UserBalanceState> {
+export class UserBalance extends React.Component<UserBalanceProps, {}> {
     constructor(props: UserBalanceProps) {
         super(props);
-        this.state = { balance: "Add some money to the user's account!" };
-        this.updateBalance = this.updateBalance.bind(this);
         this.fundUser = this.fundUser.bind(this);
     }
 
-    public updateBalance(): void {
-        Backend.updateBalance(this.props.user.token).then((balance) => {
-            this.setState((prevState, props) => {
-                return { balance };
-            });
-        });
-    }
-
-    // todo: make this take a variable amount
     public fundUser(): void {
-        Backend.fundUser(this.props.user.token, this.props.fundingSource.token).then(() => {
-            this.updateBalance();
-        });
+        this.props.fundUser(100);
     }
 
     public render() {
-        if (this.props.fundingSource) {
+        if (this.props.balance) {
             return (
                 <div>
-                    <p>{this.state.balance}</p>
+                    <p>{this.props.balance}</p>
                     <button onClick={this.fundUser}>Add $100</button>
-                    <button onClick={this.updateBalance}>Update Balance</button>
+                    <button onClick={this.props.updateBalance}>Update Balance</button>
                 </div>
             );
         } else {
