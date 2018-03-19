@@ -60,10 +60,9 @@ export async function updateBalance(userToken: string): Promise<string> {
         });
 }
 
-// todo: make this take a variable amount
 export async function fundUser(amount: number, userToken: string, fundingSourceToken: string): Promise<void> {
     const template: object = {
-        amount: amount,
+        amount,
         currency_code: "USD",
         funding_source_token: fundingSourceToken,
         user_token: userToken,
@@ -84,20 +83,21 @@ export async function fundUser(amount: number, userToken: string, fundingSourceT
 }
 
 class CardProductTemplate {
+    // tslint:disable-next-line:variable-name
     public start_date: string;
     public config: object;
     constructor(public name: string) {
         this.start_date = "2017-01-01";
         this.config = {
+            card_life_cycle: {
+                activate_upon_issue: true,
+            },
             fulfillment: {
-                payment_instrument: "VIRTUAL_PAN"
+                payment_instrument: "VIRTUAL_PAN",
             },
             poi: {
                 ecommerce: true,
             },
-            card_life_cycle: {
-                activate_upon_issue: true,
-            }
             // todo: figure out why this won't work with the simulation
             // ,
             // "transaction_controls": {
@@ -124,24 +124,24 @@ interface VelocityTemplate {
 
 // the spending controls on the entry level "Piggy Saver" card
 const piggyTemplate: VelocityTemplate = {
-    usage_limit: 100,
     amount_limit: 500,
-    velocity_window: "DAY",
     association: {
         card_product_token: "REPLACE",
     },
     currency_code: "USD",
+    usage_limit: 100,
+    velocity_window: "DAY",
 };
 
 // the spending controls on the high end "Fat Cat Spender" card
 const fatCatTemplate: VelocityTemplate = {
-    usage_limit: 100,
     amount_limit: 1000,
-    velocity_window: "DAY",
     association: {
         card_product_token: "REPLACE",
     },
     currency_code: "USD",
+    usage_limit: 100,
+    velocity_window: "DAY",
 };
 
 function createVelocityControls(type: CardTypes, cardProductToken: string): void {

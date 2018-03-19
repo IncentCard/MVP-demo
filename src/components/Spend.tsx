@@ -3,7 +3,7 @@ import { SpendForm } from "./SpendForm";
 
 export interface SpendProps {
     cardToken: string;
-    transact(amount: number);
+    transact(amount: number, pin: string);
 }
 
 export class Spend extends React.Component<SpendProps, {}> {

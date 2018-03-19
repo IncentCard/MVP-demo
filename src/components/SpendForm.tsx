@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Backend from "../backend";
 
 export interface SpendFormProps {
-    transact(amount: number);
+    transact(amount: number, pin: string);
 }
 
 export interface SpendFormState {
@@ -20,24 +20,26 @@ export class SpendForm extends React.Component<SpendFormProps, SpendFormState> {
     }
 
     public handleChangeAmount(event) {
+        const value = event.target.value;
         this.setState((prevState, props) => {
             return {
-                amount: event.target.value,
+                amount: value,
             };
         });
     }
 
     public handleChangePin(event) {
+        const value = event.target.value;
         this.setState((prevState, props) => {
             return {
-                pin: event.target.value,
+                pin: value,
             };
         });
     }
 
     public handleSubmit(event) {
         event.preventDefault();
-        this.props.transact(this.state.amount);
+        this.props.transact(this.state.amount, this.state.pin);
     }
 
     public render() {

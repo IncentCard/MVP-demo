@@ -1,11 +1,11 @@
 import * as React from "react";
 import { CardTypes } from "./backend";
+import * as Backend from "./backend";
 import { CardCreation } from "./components/CardCreation";
 import { Rewards } from "./components/Rewards";
 import { Spend } from "./components/Spend";
-import { UserCreation } from "./components/UserCreation";
 import { UserBalance } from "./components/UserBalance";
-import * as Backend from "./backend";
+import { UserCreation } from "./components/UserCreation";
 
 export interface RootState {
     userToken?: string;
@@ -26,11 +26,13 @@ export class Root extends React.Component<{}, RootState> {
         this.updateFundingSourceToken = this.updateFundingSourceToken.bind(this);
         this.updateBalance = this.updateBalance.bind(this);
         this.spendRewards = this.spendRewards.bind(this);
+        this.fundUser = this.fundUser.bind(this);
     }
 
     public updateUserToken(token: string): void {
         this.setState((prevState, props) => {
             return {
+                userBalance: "Add some money to the user's account!",
                 userToken: token,
             };
         });
@@ -46,11 +48,15 @@ export class Root extends React.Component<{}, RootState> {
         });
     }
 
-    public transact(amount: number) {
-        this.updateBalance();
+    public transact(amount: number, pin: string = "2460") {
+        Backend.transact(amount, pin, this.state.cardToken).then(() => {
+            this.updateBalance();
+        });
         this.setState((prevState, props) => {
+            const points = this.state.cardType === CardTypes.piggy ? prevState.rewardPoints + (amount * 0.1)
+                 : prevState.rewardPoints;
             return {
-                rewardPoints: (prevState.rewardPoints) + (amount * 0.1),
+                rewardPoints: points,
             };
         });
     }
@@ -58,7 +64,7 @@ export class Root extends React.Component<{}, RootState> {
     public updateFundingSourceToken(token: string): void {
         this.setState(() => {
             return { fundingSourceToken: token };
-        })
+        });
     }
 
     public updateBalance(): void {
@@ -78,15 +84,17 @@ export class Root extends React.Component<{}, RootState> {
     public spendRewards(amount: number): void {
         this.fundUser(this.state.rewardPoints);
         this.setState(() => {
-            return { rewardPoints: 0 }
-        })
+            return { rewardPoints: 0 };
+        });
     }
 
     public render() {
         return (
             <div>
-                <UserCreation updateUserToken={this.updateUserToken} updateFundingSourceToken={this.updateFundingSourceToken}/>
-                <UserBalance updateBalance={this.updateBalance} fundUser={this.fundUser} balance={this.state.userBalance}/>
+                <UserCreation updateUserToken={this.updateUserToken}
+                    updateFundingSourceToken={this.updateFundingSourceToken}/>
+                <UserBalance updateBalance={this.updateBalance} fundUser={this.fundUser}
+                    balance={this.state.userBalance}/>
                 <CardCreation userToken={this.state.userToken} updateCardToken={this.updateCardToken} />
                 <Spend cardToken={this.state.cardToken} transact={this.transact} />
                 <Rewards rewardsPoints={this.state.rewardPoints} spendRewards={this.spendRewards}/>
