@@ -2,7 +2,8 @@ import * as React from "react";
 import * as Backend from "../backend";
 
 export interface SpendFormProps {
-    transact(amount: number, pin: string);
+    cardToken: string;
+    onTransactionComplete(amount: number);
 }
 
 export interface SpendFormState {
@@ -14,12 +15,9 @@ export class SpendForm extends React.Component<SpendFormProps, SpendFormState> {
     constructor(props) {
         super(props);
         this.state = {amount: 10, pin: "2460"};
-        this.handleChangeAmount = this.handleChangeAmount.bind(this);
-        this.handleChangePin = this.handleChangePin.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    public handleChangeAmount(event) {
+    public handleChangeAmount = (event): void => {
         const value = event.target.value;
         this.setState((prevState, props) => {
             return {
@@ -28,7 +26,7 @@ export class SpendForm extends React.Component<SpendFormProps, SpendFormState> {
         });
     }
 
-    public handleChangePin(event) {
+    public handleChangePin = (event): void => {
         const value = event.target.value;
         this.setState((prevState, props) => {
             return {
@@ -37,9 +35,15 @@ export class SpendForm extends React.Component<SpendFormProps, SpendFormState> {
         });
     }
 
-    public handleSubmit(event) {
+    public handleSubmit = (event): void => {
         event.preventDefault();
-        this.props.transact(this.state.amount, this.state.pin);
+        this.transact(this.state.amount, this.props.cardToken, this.state.pin);
+    }
+
+    public transact(amount: number, cardToken: string, pin: string = "2460") {
+        Backend.transact(amount, cardToken, pin).then(() => {
+            this.props.onTransactionComplete(amount);
+        });
     }
 
     public render() {

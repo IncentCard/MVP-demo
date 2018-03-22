@@ -6,7 +6,7 @@ import { CardCreationButton } from "./CardCreationButton";
 
 export interface CardCreationProperties {
     userToken: string;
-    updateCardToken(cardToken: string, type: CardTypes): void;
+    onCardCreated(cardToken: string, type: CardTypes): void;
 }
 
 export class CardCreation extends React.Component<CardCreationProperties, {}> {
@@ -21,8 +21,8 @@ export class CardCreation extends React.Component<CardCreationProperties, {}> {
                         an industry leading 10% of your purchase value as PiggyBank Points&reg;!!! The FatCat&trade; card has an incredible
                         spending limit of $1000 at the cost of earning 100% less PiggyBank Points&reg;!!!!!
                     </p>
-                    <CardCreationButton userToken={this.props.userToken} text="Create PiggySaver&trade; Card" cardType={CardTypes.piggy} updateCardToken={this.props.updateCardToken} />
-                    <CardCreationButton userToken={this.props.userToken} text="Create FatCat&trade; Card" cardType={CardTypes.fatcat} updateCardToken={this.props.updateCardToken} />
+                    <CardCreationButton userToken={this.props.userToken} text="Create PiggySaver&trade; Card" cardType={CardTypes.piggy} onCardCreated={this.props.onCardCreated} />
+                    <CardCreationButton userToken={this.props.userToken} text="Create FatCat&trade; Card" cardType={CardTypes.fatcat} onCardCreated={this.props.onCardCreated} />
                 </div>
             );
         }

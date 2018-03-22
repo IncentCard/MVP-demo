@@ -5,7 +5,7 @@ export interface CardCreationButtonProps {
     text: string;
     cardType: Backend.CardTypes;
     userToken: string;
-    updateCardToken(cardToken: string, type: Backend.CardTypes): void;
+    onCardCreated(cardToken: string, cardType: Backend.CardTypes): void;
 }
 
 export class CardCreationButton extends React.Component<CardCreationButtonProps, {}> {
@@ -16,8 +16,8 @@ export class CardCreationButton extends React.Component<CardCreationButtonProps,
 
     public onClick(e: React.MouseEvent<HTMLElement>): void {
         e.preventDefault();
-        Backend.buildCard(this.props.cardType, this.props.userToken).then((token) => {
-            this.props.updateCardToken(token, this.props.cardType);
+        Backend.buildCard(this.props.cardType, this.props.userToken).then((cardToken) => {
+            this.props.onCardCreated(cardToken, this.props.cardType);
         });
     }
 

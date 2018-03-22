@@ -251,7 +251,7 @@ export async function buildCard(type: CardTypes, userToken: string): Promise<str
         });
 }
 
-export async function transact(amount: number, pin: string, cardToken: string): Promise<void> {
+export async function transact(amount: number, cardToken: string, pin: string): Promise<void> {
     const template: object = {
         amount,
         card_token: cardToken,

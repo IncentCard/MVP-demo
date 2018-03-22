@@ -1,35 +1,37 @@
 import * as React from "react";
 import * as Backend from "../backend";
-import { UserBalance } from "./UserBalance";
 
 export interface UserCreationState {
     userTokenText?: string;
 }
 
 export interface UserCreationProps {
-    updateUserToken(token: string): void;
-    updateFundingSourceToken(token: string): void;
+    onUserCreated(userToken: string): void;
+    onFundingSourceCreated(fundingSourceToken: string): void;
 }
 
 export class UserCreation extends React.Component<UserCreationProps, UserCreationState> {
     constructor(props: any) {
         super(props);
         this.state = { userTokenText: "Please click the button below to create a user" };
-        this.createUser = this.createUser.bind(this);
     }
 
-    public createUser(e: React.MouseEvent<HTMLElement>): void {
+    public handleClick = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
+        this.createUser();
+    }
+
+    public createUser(): void {
         Backend.createUser().then((user) => {
+            this.props.onUserCreated(user.token);
             this.setState((prevState, props) => {
-                props.updateUserToken(user.token);
                 return {
                     userTokenText: "User token: " + user.token,
                 };
             });
         });
         Backend.createFundingSource().then((fundingSource) => {
-            this.props.updateFundingSourceToken(fundingSource.token);
+            this.props.onFundingSourceCreated(fundingSource.token);
         });
     }
 
@@ -37,7 +39,7 @@ export class UserCreation extends React.Component<UserCreationProps, UserCreatio
         return (
             <div>
                 <p>{this.state.userTokenText}</p>
-                <button onClick={this.createUser}>Create a User</button>
+                <button onClick={this.handleClick}>Create a User</button>
             </div>
         );
     }

@@ -3,7 +3,7 @@ import { SpendForm } from "./SpendForm";
 
 export interface SpendProps {
     cardToken: string;
-    transact(amount: number, pin: string);
+    onTransactionComplete(amount: number);
 }
 
 export class Spend extends React.Component<SpendProps, {}> {
@@ -16,7 +16,8 @@ export class Spend extends React.Component<SpendProps, {}> {
                 <div id="spend-div">
                     <h1>Time to spend money!!!</h1>
                     <p>Card token: {this.props.cardToken}</p>
-                    <SpendForm transact={this.props.transact} />
+                    <SpendForm onTransactionComplete={this.props.onTransactionComplete} 
+                        cardToken={this.props.cardToken}/>
                 </div>
             );
         }

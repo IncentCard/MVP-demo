@@ -20,7 +20,7 @@ export class Rewards extends React.Component<RewardsProps, {}> {
             return null;
         } else {
             return (
-                <div id="rewards-div">
+                <div>
                     <h2>Rewards Center</h2>
                     <p>PiggyBank Points&reg; earned: {this.props.rewardsPoints}</p>
                     <button onClick={this.claimAllRewards}>Claim Rewards</button>
