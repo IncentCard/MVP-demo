@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Backend from "../backend";
+import { SignUp } from "./SignUp";
 
 export interface UserCreationState {
     userTokenText?: string;
@@ -13,11 +14,10 @@ export interface UserCreationProps {
 export class UserCreation extends React.Component<UserCreationProps, UserCreationState> {
     constructor(props: any) {
         super(props);
-        this.state = { userTokenText: "Please click the button below to create a user" };
+        this.state = { userTokenText: "Please fill out the form below to create a user" };
     }
 
-    public handleClick = (e: React.MouseEvent<HTMLElement>) => {
-        e.preventDefault();
+    public handleUserRegistered = () => {
         this.createUser();
     }
 
@@ -39,7 +39,7 @@ export class UserCreation extends React.Component<UserCreationProps, UserCreatio
         return (
             <div>
                 <p>{this.state.userTokenText}</p>
-                <button onClick={this.handleClick}>Create a User</button>
+                <SignUp onUserCreated={this.handleUserRegistered} />
             </div>
         );
     }

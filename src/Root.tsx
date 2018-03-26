@@ -3,6 +3,7 @@ import * as Backend from "./backend";
 import { CardCreation } from "./components/CardCreation";
 import { FundUser } from "./components/FundUser";
 import { Rewards } from "./components/Rewards";
+import { SignUp } from "./components/SignUp";
 import { Spend } from "./components/Spend";
 import { UserBalance } from "./components/UserBalance";
 import { UserCreation } from "./components/UserCreation";

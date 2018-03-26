@@ -1,5 +1,10 @@
 const authHeader: string = "Basic dXNlcjI3NTgxNTE5MzQ0MDU2Ojg4OTAxMTViLTdiOGUtNDRiOC05Mjc0LWI2ZjRlMGQzZmFlZA==";
 const baseUrl: string = "https://shared-sandbox-api.marqeta.com/v3/";
+export const plaidData = {
+    clientId: "5a8e1e7abdc6a47debd6f00a",
+    publicKey: "c1b6deae8714f517df6688a1c8f59e",
+    secret: "cd56c87bd373f0f8c98e43a912da94",
+};
 
 const fundingSourceTemplate: object = {
     name: "Program Funding",

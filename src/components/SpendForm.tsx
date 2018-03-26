@@ -49,10 +49,10 @@ export class SpendForm extends React.Component<SpendFormProps, SpendFormState> {
     public render() {
         return (
             <form onSubmit={this.handleSubmit}>
-                Amount:
+                Amount:<br/>
                 <input type="text" name="amount" value={this.state.amount} onChange={this.handleChangeAmount} />
                 <br/>
-                PIN:
+                PIN:<br/>
                 <input type="text" name="pin" value={this.state.pin} onChange={this.handleChangePin}/>
                 <br />
                 <input type="submit" value="Spend!" />
